@@ -1,12 +1,15 @@
 from sense_hat import SenseHat
 import time
 import displays as display  #importe le fichier qui comporte toutes les listes pour l'affichage
+import crypto as c
 
 s = SenseHat()
 s.low_light = True
 
 state = {
-    "menu_index" : 0
+    "menu_index" : 0,
+    "message" : [],
+    "save" : False
     }
 
 
@@ -51,7 +54,7 @@ def display_choice(menu):
         Args:
             menu: list: une liste des listes de pixels qui composent l'affichage
     """
-    choice = menu[state["menu_index"] % len(menu)]
+    choice = menu[state["menu_index"] % len(menu)][1]
     s.set_pixels(choice)
 
 
@@ -61,12 +64,83 @@ def choosed_option(menu):
         Args:
             menu: list: une liste des listes de pixels qui composent l'affichage
     """
-    choice = menu[state["menu_index"] % len(menu)]
-
+    choice = menu[state["menu_index"] % len(menu)][0]
     print("Vous avez choisis l'option n°" + str(state["menu_index"] % len(menu) + 1))
 
+    if choice == "save":
+        save_code()
 
-def show_menu(menu):
+    elif choice == "cancel":
+        raise SystemExit
+
+
+def choosed_option_message(menu):
+    """ Permet de continuer le programme en fonction de l'option choisie dans le menu
+
+        Args:
+            menu: list: une liste des listes de pixels qui composent l'affichage
+    """
+    choice = menu[state["menu_index"] % len(menu)][0]
+    print("Vous avez choisis l'option n°" + str(state["menu_index"] % len(menu) + 1))
+
+    if choice == "save_code":
+        state["save"] = True
+
+    elif choice == "cancel":
+        raise SystemExit
+
+    elif choice == "delete":
+        state["message"].pop()
+
+    elif choice == "0":
+        state["message"].append("0")
+
+    elif choice == "1":
+        state["message"].append("1")
+
+    elif choice == "2":
+        state["message"].append("2")
+
+    elif choice == "3":
+        state["message"].append("3")
+
+    elif choice == "4":
+        state["message"].append("4")
+
+    elif choice == "5":
+        state["message"].append("5")
+
+    elif choice == "6":
+        state["message"].append("6")
+
+    elif choice == "7":
+        state["message"].append("7")
+
+    elif choice == "8":
+        state["message"].append("8")
+
+    elif choice == "9":
+        state["message"].append("9")
+
+    returns = (state["message"],state["save"])
+    return returns
+
+
+def save_code():
+    menu_options = [("0", display.num_0), ("1", display.num_1),("2", display.num_2), ("3", display.num_3),("4", display.num_4),
+                    ("5", display.num_5),("6", display.num_6), ("7", display.num_7),("8", display.num_8), ("9", display.num_9),
+                    ("delete", display.delete), ("save_code", display.save), ("cancel", display.cancel)]
+
+    # Permet d'afficher le menu des options -> (numéros de 0 à 9 et del save cancel)
+    message = show_menu(menu_options,2)
+    while message[1] is not True:
+        message = show_menu(menu_options, 2)
+    message_str = ""
+    for i in message[0]:
+        message_str += str(i)
+    print("votre code: " + message_str)
+
+def show_menu(menu,menu_number):
     """ Permet d'appeller la fonction display_choice et de mettre à jour
         l'index en fonction des déplacements du joystick
 
@@ -75,7 +149,7 @@ def show_menu(menu):
     """
     choosed = False
 
-    s.set_pixels(menu[0])
+    s.set_pixels(menu[state["menu_index"] % len(menu)][1])
     while not choosed:
         events = s.stick.get_events()
         if events:
@@ -84,16 +158,19 @@ def show_menu(menu):
                     continue
 
                 if event.direction == 'left':
-                    state["menu_index"] += 1
+                    state["menu_index"] -= 1
                     display_choice(menu)
 
                 elif event.direction == 'right':
-                    state["menu_index"] -= 1
+                    state["menu_index"] += 1
                     display_choice(menu)
 
                 elif event.direction == 'middle':
                     choosed = True
-                    choosed_option(menu)
+                    if menu_number == 1:
+                        choosed_option(menu)
+                    elif menu_number == 2:
+                        return choosed_option_message(menu)
 
 
 def main():
@@ -105,11 +182,11 @@ def main():
             """ Demander d'enregistrer un message """
             print("Pas de message enregistré")
 
-            menu_options = [display.save,display.cancel]
+            menu_options = [("save",display.save),("cancel",display.cancel)]
 
             #Permet d'afficher le menu des options -> (Enregistrer un message ou annuler et revérouiller le MagicLock)
-            show_menu(menu_options)
-
+            show_menu(menu_options,1)
+            state["menu_index"] = 0
 
         else:
             """ Propose les options du message """

@@ -49,3 +49,124 @@ save = [
     O, G, G, G, G, G, G, O,
     O, O, G, G, G, G, O, O,
     ]
+
+num_0 = [
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    ]
+
+num_1 = [
+    O, O, O, W, W, W, O, O,
+    O, O, W, W, W, W, O, O,
+    O, W, W, W, W, W, O, O,
+    O, W, W, W, W, W, O, O,
+    O, O, O, W, W, W, O, O,
+    O, O, O, W, W, W, O, O,
+    O, O, O, W, W, W, O, O,
+    O, O, O, W, W, W, O, O,
+    ]
+
+num_2 = [
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, O, O, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, O, O, O, O, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    ]
+
+num_3 = [
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, O, O, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, O, O, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    ]
+
+num_4 = [
+    O, O, O, O, W, W, O, O,
+    O, O, O, W, W, W, O, O,
+    O, O, W, W, W, W, O, O,
+    O, W, W, O, W, W, O, O,
+    W, W, W, W, W, W, W, W,
+    W, W, W, W, W, W, W, W,
+    O, O, O, O, W, W, O, O,
+    O, O, O, O, W, W, O, O,
+    ]
+
+num_5 = [
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, O, O, O, O, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, O, O, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    ]
+
+num_6 = [
+    O, W, W, W, W, W, W, O,
+    O, W, W, O, O, O, O, O,
+    O, W, W, O, O, O, O, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    ]
+
+num_7 = [
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, O, O, O, O, W, W, O,
+    O, O, O, O, W, W, W, O,
+    O, O, O, W, W, W, O, O,
+    O, O, W, W, W, O, O, O,
+    O, W, W, W, O, O, O, O,
+    O, W, W, O, O, O, O, O,
+    ]
+
+num_8 = [
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    ]
+
+num_9 = [
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, O, O, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
+    ]
+
+delete = [
+    O, O, R, R, R, R, O, O,
+    O, R, R, R, R, R, R, O,
+    R, R, R, R, R, R, R, R,
+    R, W, W, W, W, W, W, R,
+    R, W, W, W, W, W, W, R,
+    R, R, R, R, R, R, R, R,
+    O, R, R, R, R, R, R, O,
+    O, O, R, R, R, R, O, O,
+    ]
