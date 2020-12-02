@@ -1,6 +1,6 @@
 from sense_hat import SenseHat
 import time
-import displays as display  #importe le fichier qui comporte toutes les listes pour l'affichage
+import displays as display # importe le fichier qui comporte toutes les listes pour l'affichage
 import crypto as c
 
 s = SenseHat()
@@ -11,7 +11,6 @@ state = {
     "message" : [],
     "save" : False
     }
-
 
 def pin():
     """ Permet de dévérouiller le MagicLock en faisant la séquence contenue dans correct_pin """
@@ -27,15 +26,14 @@ def pin():
 
         if current_pin == correct_pin:
             pin_correct = True
-            print("Pin correct")
             s.set_pixels(display.correct)
             time.sleep(1)
+            current_pin = []
 
         elif len(current_pin) == len(correct_pin):
-            current_pin = []
-            print("Wrong pin !")
             s.set_pixels(display.cancel)
             time.sleep(1)
+            current_pin = []
 
 
 def check_msg():
@@ -65,29 +63,20 @@ def choosed_option(menu):
             menu: list: une liste des listes de pixels qui composent l'affichage
     """
     choice = menu[state["menu_index"] % len(menu)][0]
-    print("Vous avez choisis l'option n°" + str(state["menu_index"] % len(menu) + 1))
+
+    #IN CASE OF DEBUG DELETE LATER
+    #print("Vous avez choisis l'option n°" + str(state["menu_index"] % len(menu) + 1))
 
     if choice == "save":
-        save_code()
+        state["menu_index"] = 0
 
     elif choice == "cancel":
+        s.set_pixels(display.screen_off)
         raise SystemExit
 
-
-def choosed_option_message(menu):
-    """ Permet de continuer le programme en fonction de l'option choisie dans le menu
-
-        Args:
-            menu: list: une liste des listes de pixels qui composent l'affichage
-    """
-    choice = menu[state["menu_index"] % len(menu)][0]
-    print("Vous avez choisis l'option n°" + str(state["menu_index"] % len(menu) + 1))
-
-    if choice == "save_code":
+    elif choice == "save_code":
+        state["menu_index"] = 0
         state["save"] = True
-
-    elif choice == "cancel":
-        raise SystemExit
 
     elif choice == "delete":
         state["message"].pop()
@@ -122,25 +111,29 @@ def choosed_option_message(menu):
     elif choice == "9":
         state["message"].append("9")
 
-    returns = (state["message"],state["save"])
-    return returns
+    return (state["message"],state["save"])
 
 
-def save_code():
+def save_message():
+    # Options du menu pour enregistrer un message.
     menu_options = [("0", display.num_0), ("1", display.num_1),("2", display.num_2), ("3", display.num_3),("4", display.num_4),
                     ("5", display.num_5),("6", display.num_6), ("7", display.num_7),("8", display.num_8), ("9", display.num_9),
                     ("delete", display.delete), ("save_code", display.save), ("cancel", display.cancel)]
 
-    # Permet d'afficher le menu des options -> (numéros de 0 à 9 et del save cancel)
-    message = show_menu(menu_options,2)
-    while message[1] is not True:
-        message = show_menu(menu_options, 2)
+    # Affiche le menu avec menu_options tant que le message n'est pas sauvegardé
+    states = show_menu(menu_options)
+    while states[1] is not True:
+        states = show_menu(menu_options)
+
+    # Enregirstre le message dans un string
     message_str = ""
-    for i in message[0]:
+    for i in states[0]:
         message_str += str(i)
+
     print("votre code: " + message_str)
 
-def show_menu(menu,menu_number):
+
+def show_menu(menu):
     """ Permet d'appeller la fonction display_choice et de mettre à jour
         l'index en fonction des déplacements du joystick
 
@@ -167,31 +160,34 @@ def show_menu(menu,menu_number):
 
                 elif event.direction == 'middle':
                     choosed = True
-                    if menu_number == 1:
-                        choosed_option(menu)
-                    elif menu_number == 2:
-                        return choosed_option_message(menu)
+                    return choosed_option(menu)
 
 
 def main():
-    while True:
-        #demande le code pin à l'utilisateur
-        pin()
 
-        if check_msg():
-            """ Demander d'enregistrer un message """
-            print("Pas de message enregistré")
+    # Demande le code pin à l'utilisateur
+    pin()
 
-            menu_options = [("save",display.save),("cancel",display.cancel)]
+    # Si il y a un message
+    if check_msg():
+        """ Demander d'enregistrer un message """
 
-            #Permet d'afficher le menu des options -> (Enregistrer un message ou annuler et revérouiller le MagicLock)
-            show_menu(menu_options,1)
-            state["menu_index"] = 0
+        # Les options qui seront disponibles dans le menu
+        menu_options = [("save",display.save),("cancel",display.cancel)]
 
-        else:
-            """ Propose les options du message """
-            print("Un message est enregistré")
-            raise SystemExit
+        # Affiche le menu avec menu_options
+        show_menu(menu_options)
+
+        # Affiche le menu pour enregistrer un message
+        save_message()
+
+    # Si il n'y a pas de message
+    else:
+        """ Propose les options du message """
+
+        #TODO Quand il n'y a pas de message
+        print("Un message est enregistré")
+        raise SystemExit
 
 
 if __name__ == "__main__":

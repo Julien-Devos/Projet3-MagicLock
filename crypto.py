@@ -77,7 +77,3 @@ def hashing(string):
 			x = -2
 		return str(x)
 	return ""
-
-code = 1100048186
-print(code)
-print(hashing("Bonjour") == str(code))

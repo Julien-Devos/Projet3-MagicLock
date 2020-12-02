@@ -118,12 +118,12 @@ num_5 = [
 
 num_6 = [
     O, W, W, W, W, W, W, O,
-    O, W, W, O, O, O, O, O,
+    O, W, W, W, W, W, W, O,
     O, W, W, O, O, O, O, O,
     O, W, W, W, W, W, W, O,
+    O, W, W, W, W, W, W, O,
     O, W, W, O, O, W, W, O,
-    O, W, W, O, O, W, W, O,
-    O, W, W, O, O, W, W, O,
+    O, W, W, W, W, W, W, O,
     O, W, W, W, W, W, W, O,
     ]
 
