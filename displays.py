@@ -170,3 +170,14 @@ delete = [
     O, R, R, R, R, R, R, O,
     O, O, R, R, R, R, O, O,
     ]
+
+floppy_disk = [
+    B, B, B, B, B, B, B, O,
+    B, B, O, O, O, O, B, B,
+    B, B, O, O, O, O, B, B,
+    B, B, B, B, B, B, B, B,
+    B, B, B, B, B, B, B, B,
+    B, B, W, W, W, W, B, B,
+    B, B, W, W, W, W, B, B,
+    B, B, W, W, W, W, B, B,
+    ]

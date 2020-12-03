@@ -5,6 +5,7 @@ import crypto as c
 
 s = SenseHat()
 s.low_light = True
+s.set_imu_config(False,True,False)
 
 state = {
     "menu_index" : 0,
@@ -65,8 +66,8 @@ def choosed_option(menu):
     """
     choice = menu[state["menu_index"] % len(menu)][0]
 
-    #IN CASE OF DEBUG DELETE LATER
-    #print("Vous avez choisis l'option n°" + str(state["menu_index"] % len(menu) + 1))
+    # IN CASE OF DEBUG DELETE LATER
+    # print("Vous avez choisis l'option n°" + str(state["menu_index"] % len(menu) + 1))
 
     if choice == "save":
         state["menu_index"] = 0
@@ -125,6 +126,7 @@ def save_message():
     states = show_menu(menu_options)
     while states[1] is not True:
         states = show_menu(menu_options)
+    save_floppy_disk_icon()
 
     # Enregirstre le message dans un string
     message_str = ""
@@ -141,8 +143,8 @@ def show_menu(menu):
         Args:
             menu: list: une liste des listes de pixels qui composent l'affichage
     """
-    choosed = False
 
+    choosed = False
     s.set_pixels(menu[state["menu_index"] % len(menu)][1])
     while not choosed:
         events = s.stick.get_events()
@@ -169,7 +171,7 @@ def main():
     # Demande le code pin à l'utilisateur
     pin()
 
-    # Si il y a un message
+    # Si il n'y a pas de message
     if check_msg():
         """ Demander d'enregistrer un message """
 
@@ -180,9 +182,19 @@ def main():
         show_menu(menu_options)
 
         # Affiche le menu pour enregistrer un message
-        save_message()
+        message_str = save_message()
 
-    # Si il n'y a pas de message
+        # Demande d'enregistrer le code (combinaison de mouvements)
+        code_str = save_code()
+
+        # Chiffre les données et les retourne en tuple
+        encrypted_data = encrypt_all(message_str, code_str)
+
+        # Enregistre les données dans les fichiers respectifs
+        save_encrypted_data(encrypted_data)
+
+
+    # Si il y a un message
     else:
         """ Propose les options du message """
 
