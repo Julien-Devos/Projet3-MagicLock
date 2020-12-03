@@ -32,6 +32,7 @@ def pin():
 
         elif len(current_pin) == len(correct_pin):
             s.set_pixels(display.cancel)
+            pin_was_false = True
             time.sleep(1)
             current_pin = []
 
