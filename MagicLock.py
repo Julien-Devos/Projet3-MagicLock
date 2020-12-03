@@ -13,6 +13,7 @@ state = {
     "save" : False
     }
 
+
 def pin():
     """ Permet de dévérouiller le MagicLock en faisant la séquence contenue dans correct_pin """
     correct_pin = [("pressed", "up"), ("released", "up"), ("pressed", "down"), ("released", "down"),
@@ -117,6 +118,12 @@ def choosed_option(menu):
 
 
 def save_message():
+    """ Affiche le menu qui permet d'enregistrer le message
+
+        Returns:
+            message_str: str: le message enregistré sous forme de string
+    """
+
     # Options du menu pour enregistrer un message.
     menu_options = [("0", display.num_0), ("1", display.num_1),("2", display.num_2), ("3", display.num_3),("4", display.num_4),
                     ("5", display.num_5),("6", display.num_6), ("7", display.num_7),("8", display.num_8), ("9", display.num_9),
@@ -134,6 +141,124 @@ def save_message():
         message_str += str(i)
 
     print("votre code: " + message_str)
+    return message_str
+
+
+def code_help():
+    """ Affiche les messages d'aide sur l'écran de led du MagicLock """
+    s.show_message("Pour enregistrer le code, bougez le MagicLock et validez en pressant le joystick. |", scroll_speed=0.06)
+    s.show_message("Pour enregistrer le code allez vers la gauche avec le joystick. |", scroll_speed=0.06)
+    s.show_message("Le code doit être composé de mouvements de 90° vers la droite ou la gauche.", scroll_speed=0.06)
+
+
+def save_floppy_disk_icon():
+    """ Permet d'afficher le 'floppydisk' qui clignotte """
+    s.set_pixels(display.floppy_disk)
+    time.sleep(0.5)
+    s.set_pixels(display.screen_off)
+    time.sleep(0.5)
+    s.set_pixels(display.floppy_disk)
+    time.sleep(0.5)
+    s.set_pixels(display.screen_off)
+    time.sleep(0.5)
+    s.set_pixels(display.floppy_disk)
+    time.sleep(0.5)
+    s.set_pixels(display.screen_off)
+
+
+def save_code():
+    """ Permet d'enregistrer le code (suite de mouvement)
+
+        Returns:
+            code_str: str: le code enregistré sous forme de string (right ou left)
+    """
+    gyro = s.get_gyroscope()
+
+    if gyro["yaw"] < 80 or gyro["yaw"] > 100:
+        s.show_message("Veuillez mettre le MagicLock droit !", scroll_speed=0.06)
+        time.sleep(1)
+
+    #TODO il faut le décommenter avec la fin
+    #s.show_message("Pour l'aide allez vers la droite avec le joystick", scroll_speed=0.06)
+
+    code_list = []
+    saved = False
+    while not saved:
+        gyro = s.get_gyroscope()
+        events = s.stick.get_events()
+        if events:
+            for event in events:
+                if event.action != "pressed":
+                    continue
+
+                if event.direction == 'left':
+                    saved = True
+                    save_floppy_disk_icon()
+
+                elif event.direction == 'right':
+                    code_help()
+
+                elif event.direction == 'middle':
+                    s.set_pixels(display.save)
+                    time.sleep(0.5)
+                    s.set_pixels(display.screen_off)
+                    code_list.append(gyro['yaw'])
+
+    for i in range(len(code_list)):
+        code_list[i] = round(code_list[i],2)
+
+    code_str = code_list_to_str(code_list)
+    return code_str
+
+
+def code_list_to_str(code_list):
+    """ Permet de transformer une liste de code en string
+
+        Returns:
+            code_str: str: une représentation du code sous forme de str (right ou left)
+    """
+    code_str = ""
+    curr = code_list[0]
+    if curr < 90:
+        code_str += "left"
+
+    elif curr > 90:
+        code_str += "right"
+
+    for i in range(1, len(code_list)):
+        if code_list[i] < curr:
+            code_str += "left"
+            curr = code_list[i]
+
+        elif code_list[i] > curr:
+            code_str += "right"
+            curr = code_list[i]
+    return code_str
+
+
+def encrypt_all(message_str,code_str):
+    """ Permet de chiffrer le message et le code
+
+        Returns:
+            hashed_code: str: le code sous forme hachée
+            encoded_message: str: le message sous forme chiffrée
+    """
+    hashed_code = c.hashing(code_str)
+    encoded_message = c.encode(hashed_code,message_str)
+
+    print(hashed_code,encoded_message)
+    return (hashed_code,encoded_message)
+
+
+def save_encrypted_data(encrypted_data):
+    """ Permet de sauvegarder le message et le code dans les fichiers respectifs """
+    code, message = encrypted_data
+
+    with open("message.txt", 'w') as message_file:
+        message_file.write(message)
+
+    with open("code.txt", 'w') as code_file:
+        code_file.write(code)
 
 
 def show_menu(menu):
@@ -143,7 +268,6 @@ def show_menu(menu):
         Args:
             menu: list: une liste des listes de pixels qui composent l'affichage
     """
-
     choosed = False
     s.set_pixels(menu[state["menu_index"] % len(menu)][1])
     while not choosed:
@@ -167,7 +291,7 @@ def show_menu(menu):
 
 
 def main():
-
+    """ Fonction principale du programme qui appelle les bonnes fonctions au bon moment """
     # Demande le code pin à l'utilisateur
     pin()
 
@@ -204,4 +328,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # Appelle la fonction qui lance le programme
     main()
