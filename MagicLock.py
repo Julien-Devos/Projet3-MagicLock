@@ -58,6 +58,14 @@ def display_choice(menu):
     choice = menu[state["menu_index"] % len(menu)][1]
     s.set_pixels(choice)
 
+def view(message):
+    s.show_message("Message: " + message)
+
+def delete_all():
+    with open("message.txt", 'w') as message_file:
+        message_file.write("")
+    with open("code.txt", 'w') as code_file:
+        code_file.write("")
 
 def choosed_option(menu):
     """ Permet de continuer le programme en fonction de l'option choisie dans le menu
@@ -66,6 +74,7 @@ def choosed_option(menu):
             menu: list: une liste des listes de pixels qui composent l'affichage
     """
     choice = menu[state["menu_index"] % len(menu)][0]
+    option = None
 
     # IN CASE OF DEBUG DELETE LATER
     # print("Vous avez choisis l'option n°" + str(state["menu_index"] % len(menu) + 1))
@@ -81,8 +90,17 @@ def choosed_option(menu):
         state["menu_index"] = 0
         state["save"] = True
 
+    elif choice == "decode":
+        state["menu_index"] = 0
+
     elif choice == "delete":
         state["message"].pop()
+
+    elif choice == "message_delete":
+        option = 'delete'
+
+    elif choice == "view":
+        option = 'view'
 
     elif choice == "0":
         state["message"].append("0")
@@ -114,7 +132,7 @@ def choosed_option(menu):
     elif choice == "9":
         state["message"].append("9")
 
-    return (state["message"],state["save"])
+    return (state["message"],state["save"],option)
 
 
 def save_message():
@@ -236,18 +254,24 @@ def code_list_to_str(code_list):
     return code_str
 
 
-def encrypt_all(message_str,code_str):
+def encrypt_all(message_number_str,code_str):
     """ Permet de chiffrer le message et le code
 
         Returns:
             hashed_code: str: le code sous forme hachée
             encoded_message: str: le message sous forme chiffrée
     """
+    alphabet = ["a","b","c","d","e","f","g","h","i","j"]
     hashed_code = c.hashing(code_str)
-    encoded_message = c.encode(hashed_code,message_str)
+    message_letter_str = ""
 
-    print(hashed_code,encoded_message)
-    return (hashed_code,encoded_message)
+    for i in message_number_str:
+        message_letter_str += alphabet[int(i)]
+
+    encoded_letter_message = c.encode(code_str,message_letter_str)
+
+    print(hashed_code,encoded_letter_message)
+    return (hashed_code,encoded_letter_message)
 
 
 def save_encrypted_data(encrypted_data):
@@ -259,6 +283,35 @@ def save_encrypted_data(encrypted_data):
 
     with open("code.txt", 'w') as code_file:
         code_file.write(code)
+
+def decode_all(code_str_try):
+
+    hashed_code_try = c.hashing(code_str_try)
+
+    with open("code.txt", 'r') as code_file:
+        correct_hashed_code = code_file.readline().strip()
+
+    if hashed_code_try == correct_hashed_code:
+        print("correct code")
+
+        with open("message.txt", 'r') as message_file:
+            correct_coded_message = message_file.readline().strip()
+        print(code_str_try, correct_coded_message)
+
+        decoded_letter_message = c.decode(code_str_try,correct_coded_message)
+
+        alphabet = [("0","a"), ("1","b"), ("2","c"), ("3","d"), ("4","e"), ("5","f"), ("6","g"), ("7","h"), ("8","i"), ("9","j")]
+        message_number_str = ""
+
+        for i in decoded_letter_message:
+            for j in range(10):
+                if alphabet[j][1] == i:
+                    message_number_str += alphabet[j][0]
+
+        return message_number_str
+
+    return False
+
 
 
 def show_menu(menu):
@@ -321,6 +374,31 @@ def main():
     # Si il y a un message
     else:
         """ Propose les options du message """
+
+        menu_options = [("decode",display.decode),("cancel",display.cancel)]
+
+        show_menu(menu_options)
+
+        code_str = save_code()
+
+        decoded_message = decode_all(code_str)
+
+        print(decoded_message)
+
+        menu_options = [("view",display.view),("message_delete",display.delete),("cancel",display.cancel)]
+
+        while True:
+            option = show_menu(menu_options)
+
+            if option[2] == 'view':
+                view(decoded_message)
+
+            elif option[2] == 'delete':
+                delete_all()
+                s.show_message("Message et code supprimés")
+                break
+
+
 
         #TODO Quand il n'y a pas de message
         print("Un message est enregistré")

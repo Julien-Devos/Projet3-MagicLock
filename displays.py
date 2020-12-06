@@ -181,3 +181,25 @@ floppy_disk = [
     B, B, W, W, W, W, B, B,
     B, B, W, W, W, W, B, B,
     ]
+
+decode = [
+    O, O, O, O, O, O, O, O,
+    O, O, O, O, O, O, O, O,
+    O, Y, Y, O, O, O, O, O,
+    Y, Y, Y, Y, Y, Y, Y, Y,
+    Y, Y, Y, Y, O, Y, O, Y,
+    O, Y, Y, O, O, O, O, O,
+    O, O, O, O, O, O, O, O,
+    O, O, O, O, O, O, O, O,
+    ]
+
+view = [
+    W, O, O, O, O, O, O, W,
+    W, W, O, O, O, O, W, W,
+    W, W, W, O, O, W, W, W,
+    W, W, W, W, W, W, W, W,
+    W, W, O, W, W, O, W, W,
+    W, W, O, O, O, O, W, W,
+    W, W, O, O, O, O, W, W,
+    W, W, O, O, O, O, W, W,
+    ]
