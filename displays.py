@@ -203,3 +203,14 @@ view = [
     W, W, O, O, O, O, W, W,
     W, W, O, O, O, O, W, W,
     ]
+
+code = [
+    O, G, G, G, O, O, O, O,
+    O, O, Y, G, O, Y, O, G,
+    O, Y, O, G, O, O, Y, G,
+    O, O, O, O, O, G, G, G,
+    G, G, G, O, O, O, O, O,
+    G, Y, O, O, G, O, Y, O,
+    G, O, Y, O, G, Y, O, O,
+    O, O, O, O, G, G, G, O,
+    ]

@@ -59,7 +59,7 @@ def display_choice(menu):
     s.set_pixels(choice)
 
 def view(message):
-    s.show_message("Message: " + message)
+    s.show_message("Message: " + message, scroll_speed=0.06)
 
 def delete_all():
     with open("message.txt", 'w') as message_file:
@@ -192,9 +192,9 @@ def save_code():
     """
     gyro = s.get_gyroscope()
 
-    if gyro["yaw"] < 80 or gyro["yaw"] > 100:
+    """if gyro["yaw"] < 80 or gyro["yaw"] > 100:
         s.show_message("Veuillez mettre le MagicLock droit !", scroll_speed=0.06)
-        time.sleep(1)
+        time.sleep(1)"""
 
     #TODO il faut le décommenter avec la fin
     #s.show_message("Pour l'aide allez vers la droite avec le joystick", scroll_speed=0.06)
@@ -202,6 +202,7 @@ def save_code():
     code_list = []
     saved = False
     while not saved:
+        s.set_pixels(display.code)
         gyro = s.get_gyroscope()
         events = s.stick.get_events()
         if events:
@@ -215,6 +216,12 @@ def save_code():
 
                 elif event.direction == 'right':
                     code_help()
+
+                elif event.direction == 'up':
+                    s.set_pixels(display.delete)
+                    time.sleep(0.5)
+                    s.set_pixels(display.screen_off)
+                    raise SystemExit
 
                 elif event.direction == 'middle':
                     s.set_pixels(display.save)
@@ -284,34 +291,42 @@ def save_encrypted_data(encrypted_data):
     with open("code.txt", 'w') as code_file:
         code_file.write(code)
 
-def decode_all(code_str_try):
 
-    hashed_code_try = c.hashing(code_str_try)
+def decode_all(code_str_tried):
+    """ Permet de décoder le message enregistré si le code fourni est correct.
+
+        Args:
+            code_str_tried: str: le code entré par l'utilisateur pour décoder le message
+
+        Returns:
+            retourne le message décodé si le code code_str_tried est correcte et False si non
+    """
+
+    hashed_code_tried = c.hashing(code_str_tried)
 
     with open("code.txt", 'r') as code_file:
         correct_hashed_code = code_file.readline().strip()
 
-    if hashed_code_try == correct_hashed_code:
+    if hashed_code_tried == correct_hashed_code:
         print("correct code")
 
         with open("message.txt", 'r') as message_file:
             correct_coded_message = message_file.readline().strip()
-        print(code_str_try, correct_coded_message)
+        print(code_str_tried, correct_coded_message)
 
-        decoded_letter_message = c.decode(code_str_try,correct_coded_message)
+        decoded_letter_message = c.decode(code_str_tried,correct_coded_message)
 
-        alphabet = [("0","a"), ("1","b"), ("2","c"), ("3","d"), ("4","e"), ("5","f"), ("6","g"), ("7","h"), ("8","i"), ("9","j")]
+        letters = [("0","a"), ("1","b"), ("2","c"), ("3","d"), ("4","e"), ("5","f"), ("6","g"), ("7","h"), ("8","i"), ("9","j")]
         message_number_str = ""
 
         for i in decoded_letter_message:
             for j in range(10):
-                if alphabet[j][1] == i:
-                    message_number_str += alphabet[j][0]
+                if letters[j][1] == i:
+                    message_number_str += letters[j][0]
 
         return message_number_str
 
     return False
-
 
 
 def show_menu(menu):
@@ -341,6 +356,28 @@ def show_menu(menu):
                 elif event.direction == 'middle':
                     choosed = True
                     return choosed_option(menu)
+
+
+def wrong_code_display():
+    """ Affiche à l'écran les 'logos' qui signifient un mauvais code et la suppression des fichiers"""
+    s.set_pixels(display.cancel)
+    time.sleep(0.3)
+    s.set_pixels(display.delete)
+    time.sleep(0.3)
+    s.set_pixels(display.cancel)
+    time.sleep(0.3)
+    s.set_pixels(display.delete)
+    time.sleep(0.3)
+    s.set_pixels(display.cancel)
+    time.sleep(0.3)
+    s.set_pixels(display.delete)
+    time.sleep(0.3)
+    s.set_pixels(display.cancel)
+    time.sleep(0.3)
+    s.set_pixels(display.delete)
+    time.sleep(0.3)
+    s.set_pixels(display.cancel)
+    s.set_pixels(display.screen_off)
 
 
 def main():
@@ -375,34 +412,48 @@ def main():
     else:
         """ Propose les options du message """
 
+        # Les options qui seront disponibles dans le menu
         menu_options = [("decode",display.decode),("cancel",display.cancel)]
 
+        # Affiche le menu avec menu_options
         show_menu(menu_options)
 
+        # Permet d'enregistrer le code entré dans code_str
         code_str = save_code()
 
+        # Permet d'essayer 3 fois de rentrer un code pour décoder le message enregistré
+        tries = 1
         decoded_message = decode_all(code_str)
 
-        print(decoded_message)
+        while decoded_message is False and tries < 3:
+            code_str = save_code()
+            decoded_message = decode_all(code_str)
+            tries += 1
 
-        menu_options = [("view",display.view),("message_delete",display.delete),("cancel",display.cancel)]
+        # Si au bout de 3 essais le code est toujours
+        # erroné on appelle wrong_code_display() et on supprime les fichiers
+        if tries == 3:
+            wrong_code_display()
+            delete_all()
 
-        while True:
-            option = show_menu(menu_options)
+        #Si le message est décodé on affiche les options disponibles
+        if decoded_message is not False:
+            # Les options qui seront disponibles dans le menu
+            menu_options = [("view",display.view),("message_delete",display.delete),("cancel",display.cancel)]
 
-            if option[2] == 'view':
-                view(decoded_message)
+            while True:
+                # Affiche le menu avec menu_options
+                option = show_menu(menu_options)
 
-            elif option[2] == 'delete':
-                delete_all()
-                s.show_message("Message et code supprimés")
-                break
+                # Si l'option est choisie on affiche le message
+                if option[2] == 'view':
+                    view(decoded_message)
 
-
-
-        #TODO Quand il n'y a pas de message
-        print("Un message est enregistré")
-        raise SystemExit
+                # Si l'option est choisie on supprime les fichiers
+                elif option[2] == 'delete':
+                    delete_all()
+                    s.show_message("Message et code supprimes", scroll_speed=0.06)
+                    break
 
 
 if __name__ == "__main__":
