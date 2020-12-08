@@ -316,7 +316,8 @@ def decode_all(code_str_tried):
 
         decoded_letter_message = c.decode(code_str_tried,correct_coded_message)
 
-        letters = [("0","a"), ("1","b"), ("2","c"), ("3","d"), ("4","e"), ("5","f"), ("6","g"), ("7","h"), ("8","i"), ("9","j")]
+        # SECURITE EN PLUS
+        letters = [("0","c"), ("1","f"), ("2","h"), ("3","w"), ("4","z"), ("5","a"), ("6","k"), ("7","m"), ("8","q"), ("9","s")]
         message_number_str = ""
 
         for i in decoded_letter_message:
@@ -395,8 +396,18 @@ def main():
         # Affiche le menu avec menu_options
         show_menu(menu_options)
 
-        # Affiche le menu pour enregistrer un message
-        message_str = save_message()
+        saved = False
+
+        while not saved:
+            # Affiche le menu pour enregistrer un message
+            message_str = save_message()
+
+            menu_options = [("save", display.save), ("cancel", display.cancel)]
+
+        # Roll 315 - 45  Pitch 330 - 30
+
+
+        #TODO Affiche le message un menu pour garder ou réenregistrer
 
         # Demande d'enregistrer le code (combinaison de mouvements)
         code_str = save_code()
