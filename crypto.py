@@ -79,7 +79,5 @@ def hashing(string):
 	return ""
 
 if __name__ == '__main__':
-	  code = encode("roll90pitch70yaw90roll180pitch70yaw23","bonjour")
-	  print(code)
-	  print(hashing("roll90pitch70yaw90roll180pitch70yaw23"))
-	  print(decode("roll90pitch70yaw90roll180pitch70yaw23", code))
+	  print(hashing("pitch360roll360yaw90pitch90roll360yaw90pitch360roll180yaw270pitch270roll270yaw270pitch360roll270yaw360pitch360roll90yaw360"))
+	  print(decode('764037132', 'ÒË'))
