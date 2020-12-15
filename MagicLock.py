@@ -464,7 +464,7 @@ def main():
 
         # Si au bout de 3 essais le code est toujours
         # erroné on appelle wrong_code_display() et on supprime les fichiers
-        if tries == 3:
+        if tries == 3 and decoded_message is False:
             wrong_code_display()
             delete_all()
 
