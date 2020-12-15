@@ -53,17 +53,20 @@ def display_choice(menu):
         de la liste de listes de pixels 'menu'
 
         Args:
-            menu: list: une liste des listes de pixels qui composent l'affichage
+            menu: list: une liste de tuples qui contiennent des listes de pixels qui composent
+                        l'affichage et des strings qui décrivent l'option
     """
     choice = menu[state["menu_index"] % len(menu)][1]
     s.set_pixels(choice)
 
 
 def view(message):
+    " Affiche le message 'message' sur le MagicLock "
     s.show_message("Message: " + message, scroll_speed=0.06)
 
 
 def delete_all():
+    " Permet de supprimer le message et le code stockés dans leurs fichiers respectifs "
     with open("message.txt", 'w') as message_file:
         message_file.write("")
     with open("code.txt", 'w') as code_file:
@@ -71,10 +74,11 @@ def delete_all():
 
 
 def choosed_option(menu):
-    """ Permet de continuer le programme en fonction de l'option choisie dans le menu
+    """ Permet de faire une action en fonction de l'option choisie dans le menu
 
         Args:
-            menu: list: une liste des listes de pixels qui composent l'affichage
+            menu: list: une liste de tuples qui contiennent des listes de pixels qui composent
+                        l'affichage et des strings qui décrivent l'option
     """
     choice = menu[state["menu_index"] % len(menu)][0]
     option = None
@@ -137,12 +141,11 @@ def choosed_option(menu):
 
 
 def save_message():
-    """ Affiche le menu qui permet d'enregistrer le message
+    """ Affiche le menu qui permet d'enregistrer un message
 
         Returns:
             message_str: str: le message enregistré sous forme de string
     """
-
     # Options du menu pour enregistrer un message.
     menu_options = [("0", display.num_0), ("1", display.num_1), ("2", display.num_2), ("3", display.num_3),
                     ("4", display.num_4),
@@ -159,7 +162,7 @@ def save_message():
             state["save"] = False
     save_floppy_disk_icon()
 
-    # Enregirstre le message dans un string
+    # Enregistre le message dans un string
     message_str = ""
     for i in states[0]:
         message_str += str(i)
@@ -169,8 +172,7 @@ def save_message():
 
 def code_help():
     """ Affiche les messages d'aide sur l'écran de led du MagicLock """
-    s.show_message("Pour enregistrer le code, bougez le MagicLock et validez en pressant le joystick. |",
-                   scroll_speed=0.06)
+    s.show_message("Pour enregistrer le code, bougez le MagicLock et validez en pressant le joystick. |", scroll_speed=0.06)
     s.show_message("Pour enregistrer le code allez vers la gauche avec le joystick. |", scroll_speed=0.06)
     s.show_message("Le code doit être composé de mouvements de 90° vers la droite ou la gauche.", scroll_speed=0.06)
 
@@ -191,20 +193,18 @@ def save_floppy_disk_icon():
 
 
 def save_code():
-    """ Permet d'enregistrer le code (suite de mouvement)
+    """ Permet d'enregistrer le code (suite de mouvement) qui se compose des différentes faces
+        qui composent le code enregistré.
 
         Returns:
-            code_str: str: le code enregistré sous forme de string (right ou left)
+            code_str: str: le code enregistré sous forme de string composé de FACE1FACE2 ... etc
     """
-
-    # TODO il faut le décommenter avec la fin
-    # s.show_message("Pour l'aide allez vers la droite avec le joystick", scroll_speed=0.06)
 
     code_list = []
     saved = False
     while not saved:
         s.set_pixels(display.code)
-        gyro = s.get_gyroscope()
+        accelerometer = s.get_accelerometer_raw()
         events = s.stick.get_events()
         if events:
             for event in events:
@@ -231,37 +231,43 @@ def save_code():
                     s.set_pixels(display.save)
                     time.sleep(0.5)
                     s.set_pixels(display.screen_off)
-                    code_list.append([["roll", gyro['roll']], ["pitch", gyro['pitch']], ["yaw", gyro['yaw']]])
+                    code_list.append([["x", round(accelerometer['x'])], ["y", round(accelerometer['y'])], ["z", round(accelerometer['z'])]])
 
     for i in range(len(code_list)):
         for j in range(len(code_list[i])):
             code_list[i][j][1] = round(code_list[i][j][1], 2)
-    print(code_list)
+
     code_str = code_list_to_str(code_list)
-    print(code_str)
     return code_str
 
 
 def code_list_to_str(code_list):
-    """ Permet de transformer une liste de code en string
+    """ Permet de transformer une liste de code en string composé des faces de celui-ci
 
         Returns:
-            code_str: str: une représentation du code sous forme de str (right ou left)
+            code_str: str: le code enregistré sous forme de string composé de FACE1FACE2 ... etc
     """
     code_str = ""
-    curr = code_list[0]
-    # [[['pitch', 70.4], ['roll', 332.88], ['yaw', 81.13]], [['pitch', 338.07], ['roll', 298.1], ['yaw', 328.45]], [['pitch', 299.45], ['roll', 258.01], ['yaw', 321.3]], [['pitch', 350.57], ['roll', 84.53], ['yaw', 88.07]]]
-    for pos in range(len(code_list)):
-        for value in range(len(code_list[pos])):
-            if 45 < code_list[pos][value][1] <= 115:
-                code_str += code_list[pos][value][0] + "90"
-            elif 115 < code_list[pos][value][1] <= 205:
-                code_str += code_list[pos][value][0] + "180"
-            elif 205 < code_list[pos][value][1] <= 295:
-                code_str += code_list[pos][value][0] + "270"
-            elif 295 < code_list[pos][value][1] <= 360 or 0 <= code_list[pos][value][1] <= 45 or str(
-                    code_list[pos][value][1]) == 'nan':
-                code_str += code_list[pos][value][0] + "360"
+    for pos in code_list:
+        x, y, z = pos[0][1], pos[1][1], pos[2][1]
+
+        if x == 1 and y == 0 and z == 0:
+            code_str += "FACE1"
+        elif x == 0 and y == 1 and z == 0:
+            code_str += "FACE2"
+        elif x == 0 and y == 0 and z == 1 or str(x) == 'NaN' or str(y) == 'NaN' or str(z) == 'NaN':
+            code_str += "FACE3"
+        elif x == -1 and y == 0 and z == 0:
+            code_str += "FACE4"
+        elif x == 0 and y == -1 and z == 0:
+            code_str += "FACE5"
+        elif x == 0 and y == 0 and z == -1:
+            code_str += "FACE6"
+        elif x == 0 and y == -1 and z == -1:
+            code_str += "FACE7"
+        elif x == 0 and y == 1 and z == -1:
+            code_str += "FACE8"
+
     return code_str
 
 
@@ -272,7 +278,7 @@ def encrypt_all(message_number_str, code_str):
             hashed_code: str: le code sous forme hachée
             encoded_message: str: le message sous forme chiffrée
     """
-    alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+    alphabet = ["f", "g", "e", "j", "z", "v", "k", "q", "s", "w"]
     hashed_code = c.hashing(code_str)
     message_letter_str = ""
 
@@ -317,9 +323,9 @@ def decode_all(code_str_tried):
 
         decoded_letter_message = c.decode(code_str_tried, correct_coded_message)
 
-        # SECURITE EN PLUS
-        letters = [("0", "a"), ("1", "b"), ("2", "c"), ("3", "d"), ("4", "e"), ("5", "f"), ("6", "g"), ("7", "h"),
-                   ("8", "i"), ("9", "j")]
+        # Les lettres ne sont pas dans le bon ordre pour plus de sécurités
+        letters = [("0", "f"), ("1", "g"), ("2", "e"), ("3", "j"), ("4", "z"), ("5", "v"), ("6", "k"), ("7", "q"),
+                   ("8", "s"), ("9", "w")]
         message_number_str = ""
 
         for i in decoded_letter_message:
@@ -328,7 +334,6 @@ def decode_all(code_str_tried):
                     message_number_str += letters[j][0]
 
         return message_number_str
-
     return False
 
 
@@ -337,7 +342,8 @@ def show_menu(menu):
         l'index en fonction des déplacements du joystick
 
         Args:
-            menu: list: une liste des listes de pixels qui composent l'affichage
+            menu: list: une liste de tuples qui contiennent des listes de pixels qui composent
+                        l'affichage et des strings qui décrivent l'option
     """
     choosed = False
     s.set_pixels(menu[state["menu_index"] % len(menu)][1])
@@ -362,7 +368,7 @@ def show_menu(menu):
 
 
 def wrong_code_display():
-    """ Affiche à l'écran les 'logos' qui signifient un mauvais code et la suppression des fichiers"""
+    """ Affiche à l'écran les 'logos' qui signifient un mauvais code et la suppression des fichiers """
     s.set_pixels(display.cancel)
     time.sleep(0.3)
     s.set_pixels(display.delete)
@@ -388,7 +394,7 @@ def main():
     # Demande le code pin à l'utilisateur
     pin()
 
-    # Si il n'y a pas de message
+    # Si aucun message n'est enregistré
     if check_msg():
         """ Demander d'enregistrer un message """
 
@@ -422,10 +428,6 @@ def main():
                 s.show_message("Message supprime", scroll_speed=0.06)
                 raise SystemExit
 
-        # Roll 315 - 45  Pitch 330 - 30
-
-        # TODO Affiche le message un menu pour garder ou réenregistrer
-
         # Demande d'enregistrer le code (combinaison de mouvements)
         code_str = save_code()
 
@@ -436,7 +438,7 @@ def main():
         save_encrypted_data(encrypted_data)
 
 
-    # Si il y a un message
+    # Si un message est enregistré
     else:
         """ Propose les options du message """
 
@@ -477,11 +479,11 @@ def main():
                 # Affiche le menu avec menu_options
                 option = show_menu(menu_options)
 
-                # Si l'option est choisie on affiche le message
+                # Si l'option 'view' est choisie on affiche le message
                 if option[2] == 'view':
                     view(decoded_message)
 
-                # Si l'option est choisie on supprime les fichiers
+                # Si l'option 'message_delete' est choisie on supprime les fichiers
                 elif option[2] == 'message_delete':
                     delete_all()
                     s.show_message("Message et code supprimes", scroll_speed=0.06)
