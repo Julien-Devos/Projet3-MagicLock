@@ -77,7 +77,3 @@ def hashing(string):
 			x = -2
 		return str(x)
 	return ""
-
-if __name__ == '__main__':
-	  print(hashing("pitch360roll360yaw90pitch90roll360yaw90pitch360roll180yaw270pitch270roll270yaw270pitch360roll270yaw360pitch360roll90yaw360"))
-	  print(decode('764037132', 'ÒË'))
