@@ -263,10 +263,6 @@ def code_list_to_str(code_list):
             code_str += "FACE5"
         elif x == 0 and y == 0 and z == -1:
             code_str += "FACE6"
-        elif x == 0 and y == -1 and z == -1:
-            code_str += "FACE7"
-        elif x == 0 and y == 1 and z == -1:
-            code_str += "FACE8"
 
     return code_str
 
