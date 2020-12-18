@@ -48,6 +48,36 @@ def check_msg():
             return False
 
 
+def show_menu(menu):
+    """ Permet d'appeller la fonction display_choice et de mettre à jour
+        l'index en fonction des déplacements du joystick
+
+        Args:
+            menu: list: une liste de tuples qui contiennent des listes de pixels qui composent
+                        l'affichage et des strings qui décrivent l'option
+    """
+    choosed = False
+    s.set_pixels(menu[state["menu_index"] % len(menu)][1])
+    while not choosed:
+        events = s.stick.get_events()
+        if events:
+            for event in events:
+                if event.action != "pressed":
+                    continue
+
+                if event.direction == 'left':
+                    state["menu_index"] -= 1
+                    display_choice(menu)
+
+                elif event.direction == 'right':
+                    state["menu_index"] += 1
+                    display_choice(menu)
+
+                elif event.direction == 'middle':
+                    choosed = True
+                    return choosed_option(menu)
+
+
 def display_choice(menu):
     """ Permet d'afficher la bonne "image" sur l'écran de led en fonction de la position et
         de la liste de listes de pixels 'menu'
@@ -58,19 +88,6 @@ def display_choice(menu):
     """
     choice = menu[state["menu_index"] % len(menu)][1]
     s.set_pixels(choice)
-
-
-def view(message):
-    " Affiche le message 'message' sur le MagicLock "
-    s.show_message("Message: " + message, scroll_speed=0.06)
-
-
-def delete_all():
-    " Permet de supprimer le message et le code stockés dans leurs fichiers respectifs "
-    with open("message.txt", 'w') as message_file:
-        message_file.write("")
-    with open("code.txt", 'w') as code_file:
-        code_file.write("")
 
 
 def choosed_option(menu):
@@ -170,11 +187,9 @@ def save_message():
     return message_str
 
 
-def code_help():
-    """ Affiche les messages d'aide sur l'écran de led du MagicLock """
-    s.show_message("Pour enregistrer le code, bougez le MagicLock et validez en pressant le joystick. |", scroll_speed=0.06)
-    s.show_message("Pour enregistrer le code allez vers la gauche avec le joystick. |", scroll_speed=0.06)
-    s.show_message("Le code doit être composé de mouvements de 90° vers la droite ou la gauche.", scroll_speed=0.06)
+def view(message):
+    " Affiche le message 'message' sur le MagicLock "
+    s.show_message("Message: " + message, scroll_speed=0.06)
 
 
 def save_floppy_disk_icon():
@@ -274,6 +289,7 @@ def encrypt_all(message_number_str, code_str):
             hashed_code: str: le code sous forme hachée
             encoded_message: str: le message sous forme chiffrée
     """
+    # Transformation en lettres pour plus de sécurité
     alphabet = ["f", "g", "e", "j", "z", "v", "k", "q", "s", "w"]
     hashed_code = c.hashing(code_str)
     message_letter_str = ""
@@ -295,6 +311,13 @@ def save_encrypted_data(encrypted_data):
 
     with open("code.txt", 'w') as code_file:
         code_file.write(code)
+
+
+def code_help():
+    """ Affiche les messages d'aide sur l'écran de led du MagicLock """
+    s.show_message("Pour enregistrer le code, bougez le MagicLock et validez en pressant le joystick. |", scroll_speed=0.06)
+    s.show_message("Pour enregistrer le code allez vers la gauche avec le joystick. |", scroll_speed=0.06)
+    s.show_message("Le code doit être composé de mouvements de 90° vers la droite ou la gauche.", scroll_speed=0.06)
 
 
 def decode_all(code_str_tried):
@@ -333,34 +356,12 @@ def decode_all(code_str_tried):
     return False
 
 
-def show_menu(menu):
-    """ Permet d'appeller la fonction display_choice et de mettre à jour
-        l'index en fonction des déplacements du joystick
-
-        Args:
-            menu: list: une liste de tuples qui contiennent des listes de pixels qui composent
-                        l'affichage et des strings qui décrivent l'option
-    """
-    choosed = False
-    s.set_pixels(menu[state["menu_index"] % len(menu)][1])
-    while not choosed:
-        events = s.stick.get_events()
-        if events:
-            for event in events:
-                if event.action != "pressed":
-                    continue
-
-                if event.direction == 'left':
-                    state["menu_index"] -= 1
-                    display_choice(menu)
-
-                elif event.direction == 'right':
-                    state["menu_index"] += 1
-                    display_choice(menu)
-
-                elif event.direction == 'middle':
-                    choosed = True
-                    return choosed_option(menu)
+def delete_all():
+    " Permet de supprimer le message et le code stockés dans leurs fichiers respectifs "
+    with open("message.txt", 'w') as message_file:
+        message_file.write("")
+    with open("code.txt", 'w') as code_file:
+        code_file.write("")
 
 
 def wrong_code_display():
@@ -484,6 +485,7 @@ def main():
                     delete_all()
                     s.show_message("Message et code supprimes", scroll_speed=0.06)
                     break
+
 
 if __name__ == "__main__":
     # Appelle la fonction qui lance le programme
