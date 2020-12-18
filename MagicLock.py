@@ -213,7 +213,7 @@ def save_floppy_disk_icon():
 
 def save_code():
     """ Permet d'enregistrer le code (suite de mouvement) qui se compose des différentes faces
-        qui composent le code enregistré.
+        qui composent le code enregistré à l'aide de l'accéléromètre.
 
         Returns:
             code_str: str: le code enregistré sous forme de string composé de FACE1FACE2 ... etc
@@ -320,8 +320,8 @@ def save_encrypted_data(encrypted_data):
 def code_help():
     """ Affiche les messages d'aide sur l'écran de led du MagicLock """
     s.show_message("Pour enregistrer le code, bougez le MagicLock et validez en pressant le joystick. |", scroll_speed=0.06)
-    s.show_message("Pour enregistrer le code allez vers la gauche avec le joystick. |", scroll_speed=0.06)
-    s.show_message("Le code doit être composé de mouvements de 90° vers la droite ou la gauche.", scroll_speed=0.06)
+    s.show_message("Pour sauvegarder le code allez vers la gauche avec le joystick. |", scroll_speed=0.06)
+    s.show_message("Le code doit etre compose de mouvements de 90deg dans l'espace", scroll_speed=0.06)
 
 
 def decode_all(code_str_tried):
