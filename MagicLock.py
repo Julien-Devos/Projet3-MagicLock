@@ -3,6 +3,10 @@ import time
 import displays as display  # importe le fichier qui comporte toutes les listes pour l'affichage
 import crypto as c
 
+#UCL SINF11BA LINFO1001 Pojet N°3
+#Romain Gobert, Béranger Deketelaere, Bryan Devos, Julien Devos
+#Projet Fini et rendu le 18/12/2020
+
 s = SenseHat()
 s.low_light = True
 s.set_imu_config(False, True, False)
