@@ -6,6 +6,12 @@ W = (255,255,255)
 P = (255,105, 180)
 O = (0,0,0)
 
+""" 
+    C'est dans ce fichier que se trouve toutes les différentes
+    listes de pixels ou logos qui sont utilisés durant le fonctionnement
+    du MagicLock. Ce fichier est importé dans MagicLock.py  
+"""
+
 screen_off = [
     O, O, O, O, O, O, O, O,
     O, O, O, O, O, O, O, O,
