@@ -7,8 +7,7 @@ Le MagicLock permet de sécuriser un code en le chiffrant à l'aide d'une suite 
 Pour le déverrouiller il suffit de faire la bonne combinaison de mouvements.
 
 
-Pour 'déverrouiller' le MagicLock il faut faire un code au début. Une fois le programme lancé, pour rentrer dans 
-le MagicLock, il suffit de faire cette combinaison avec le joy stick: HAUT BAS GAUCHE DROITE 
+Une fois lancé, pour 'déverrouiller' le MagicLock il suffit de faire cette combinaison avec le joy stick: HAUT BAS GAUCHE DROITE 
 
 ## Requirements:
 
