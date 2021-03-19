@@ -13,7 +13,7 @@ Une fois lancé, pour 'déverrouiller' le MagicLock il suffit de faire cette com
 
  - Un raspberry pi équipé du sense hat ou un simulateur
 
- - Python 3.8
+ - Python 3
 
  - La librairie python Sense_Hat
 
